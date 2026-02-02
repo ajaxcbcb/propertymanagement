@@ -1,0 +1,117 @@
+
+   FAIL  Tests\Feature\PropMasterProcessFlowTest
+  ⨯ it can create valid tenancy agreement                                                                                                                                                           1.14s  
+  ⨯ it prevents duplicate active tenancy agreements                                                                                                                                                 0.05s  
+  ⨯ it auto inactivates expired tenancy                                                                                                                                                             0.04s  
+  ⨯ it generates monthly invoices                                                                                                                                                                   0.05s  
+  ✓ it processes full payment via offset observer                                                                                                                                                   0.07s  
+  ✓ it processes partial payment                                                                                                                                                                    0.05s  
+  ✓ it handles surplus payment to wallet                                                                                                                                                            0.05s  
+  ✓ it uses wallet balance for new invoices                                                                                                                                                         0.06s  
+  ✓ it applies late fees correctly                                                                                                                                                                  0.06s  
+  ⨯ it records expenditure                                                                                                                                                                          0.07s  
+  ✓ it calculates account statement data                                                                                                                                                            0.06s  
+  ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────  
+   FAILED  Tests\Feature\PropMasterProcessFlowTest > it can create valid tenancy agreement                                                                                                QueryException   
+  SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: properties.type (Connection: sqlite, SQL: insert into "properties" ("name", "address", "updated_at", "created_at") values (Unit 101, 123 Street, 2026-01-30 07:28:54, 2026-01-30 07:28:54))
+
+  at vendor\laravel\framework\src\Illuminate\Database\Connection.php:825
+    821▕                     $this->getName(), $query, $this->prepareBindings($bindings), $e
+    822▕                 );
+    823▕             }
+    824▕ 
+  ➜ 825▕             throw new QueryException(
+    826▕                 $this->getName(), $query, $this->prepareBindings($bindings), $e
+    827▕             );
+    828▕         }
+    829▕     }
+
+  1   vendor\laravel\framework\src\Illuminate\Database\Connection.php:825
+
+  2   vendor\laravel\framework\src\Illuminate\Database\Connection.php:571
+      NunoMaduro\Collision\Exceptions\TestException::("SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: properties.type")
+
+  ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────  
+   FAILED  Tests\Feature\PropMasterProcessFlowTest > it prevents duplicate active tenancy agreements                                                                                      QueryException   
+  SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: properties.type (Connection: sqlite, SQL: insert into "properties" ("name", "address", "updated_at", "created_at") values (Unit 101, 123 Street, 2026-01-30 07:28:54, 2026-01-30 07:28:54))
+
+  at vendor\laravel\framework\src\Illuminate\Database\Connection.php:825
+    821▕                     $this->getName(), $query, $this->prepareBindings($bindings), $e
+    822▕                 );
+    823▕             }
+    824▕ 
+  ➜ 825▕             throw new QueryException(
+    826▕                 $this->getName(), $query, $this->prepareBindings($bindings), $e
+    827▕             );
+    828▕         }
+    829▕     }
+
+  1   vendor\laravel\framework\src\Illuminate\Database\Connection.php:825
+
+  2   vendor\laravel\framework\src\Illuminate\Database\Connection.php:571
+      NunoMaduro\Collision\Exceptions\TestException::("SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: properties.type")
+
+  ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────  
+   FAILED  Tests\Feature\PropMasterProcessFlowTest > it auto inactivates expired tenancy                                                                                                  QueryException   
+  SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: properties.type (Connection: sqlite, SQL: insert into "properties" ("name", "address", "updated_at", "created_at") values (Unit 101, 123 Street, 2026-01-30 07:28:54, 2026-01-30 07:28:54))
+
+  at vendor\laravel\framework\src\Illuminate\Database\Connection.php:825
+    821▕                     $this->getName(), $query, $this->prepareBindings($bindings), $e
+    822▕                 );
+    823▕             }
+    824▕ 
+  ➜ 825▕             throw new QueryException(
+    826▕                 $this->getName(), $query, $this->prepareBindings($bindings), $e
+    827▕             );
+    828▕         }
+    829▕     }
+
+  1   vendor\laravel\framework\src\Illuminate\Database\Connection.php:825
+
+  2   vendor\laravel\framework\src\Illuminate\Database\Connection.php:571
+      NunoMaduro\Collision\Exceptions\TestException::("SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: properties.type")
+
+  ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────  
+   FAILED  Tests\Feature\PropMasterProcessFlowTest > it generates monthly invoices                                                                                                        QueryException   
+  SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: properties.type (Connection: sqlite, SQL: insert into "properties" ("name", "address", "updated_at", "created_at") values (Unit 101, 123 St, 2026-01-30 07:28:54, 2026-01-30 07:28:54))
+
+  at vendor\laravel\framework\src\Illuminate\Database\Connection.php:825
+    821▕                     $this->getName(), $query, $this->prepareBindings($bindings), $e
+    822▕                 );
+    823▕             }
+    824▕ 
+  ➜ 825▕             throw new QueryException(
+    826▕                 $this->getName(), $query, $this->prepareBindings($bindings), $e
+    827▕             );
+    828▕         }
+    829▕     }
+
+  1   vendor\laravel\framework\src\Illuminate\Database\Connection.php:825
+
+  2   vendor\laravel\framework\src\Illuminate\Database\Connection.php:571
+      NunoMaduro\Collision\Exceptions\TestException::("SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: properties.type")
+
+  ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────  
+   FAILED  Tests\Feature\PropMasterProcessFlowTest > it records expenditure                                                                                                               QueryException   
+  SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: properties.type (Connection: sqlite, SQL: insert into "properties" ("name", "address", "updated_at", "created_at") values (Unit 102, 456 Road, 2026-01-30 07:28:55, 2026-01-30 07:28:55))
+
+  at vendor\laravel\framework\src\Illuminate\Database\Connection.php:825
+    821▕                     $this->getName(), $query, $this->prepareBindings($bindings), $e
+    822▕                 );
+    823▕             }
+    824▕ 
+  ➜ 825▕             throw new QueryException(
+    826▕                 $this->getName(), $query, $this->prepareBindings($bindings), $e
+    827▕             );
+    828▕         }
+    829▕     }
+
+  1   vendor\laravel\framework\src\Illuminate\Database\Connection.php:825
+
+  2   vendor\laravel\framework\src\Illuminate\Database\Connection.php:571
+      NunoMaduro\Collision\Exceptions\TestException::("SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: properties.type")
+
+
+  Tests:    5 failed, 6 passed (16 assertions)
+  Duration: 1.90s
+

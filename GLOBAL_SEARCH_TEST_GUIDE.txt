@@ -1,0 +1,185 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║                    GLOBAL SEARCH AUTO-FILTER TEST GUIDE                    ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+QUICK TEST STEPS
+═══════════════════════════════════════════════════════════════════════════
+
+Step 1: Open Admin Panel
+┌────────────────────────────────────────────────────────────────────────┐
+│ URL: http://127.0.0.1:8888/admin                                      │
+└────────────────────────────────────────────────────────────────────────┘
+
+Step 2: Use Global Search
+┌────────────────────────────────────────────────────────────────────────┐
+│ Look for the search icon (🔍) in the top navigation bar               │
+│ Click on it to open the search input                                  │
+└────────────────────────────────────────────────────────────────────────┘
+
+Step 3: Search for a Tenant
+┌────────────────────────────────────────────────────────────────────────┐
+│ Type: "Tenant One"                                                     │
+│ (or any tenant name from your database)                               │
+└────────────────────────────────────────────────────────────────────────┘
+
+Step 4: Click on Search Result
+┌────────────────────────────────────────────────────────────────────────┐
+│ You should see a result like:                                         │
+│ ┌──────────────────────────────────────────────────────────────────┐  │
+│ │ 👤 Tenant One                                                    │  │
+│ │    Email: tenant1@example.com                                    │  │
+│ │    Phone: +60123456789                                           │  │
+│ │    Properties: Suria KLCC                                        │  │
+│ └──────────────────────────────────────────────────────────────────┘  │
+│                                                                        │
+│ Click on this result ⬆                                                │
+└────────────────────────────────────────────────────────────────────────┘
+
+Step 5: Verify Auto-Filter
+┌────────────────────────────────────────────────────────────────────────┐
+│ ✓ Check URL contains: ?tenant=1 (or another ID)                       │
+│ ✓ Check page title: "Account Statements"                              │
+│ ✓ Check filter indicator shows: "Filters" or "1 filter active"        │
+│ ✓ Check table shows ONLY records for "Tenant One"                     │
+└────────────────────────────────────────────────────────────────────────┘
+
+
+ALTERNATIVE: DIRECT URL TEST
+═══════════════════════════════════════════════════════════════════════════
+
+If global search doesn't work, test directly with URLs:
+
+Test Tenant Filter:
+┌────────────────────────────────────────────────────────────────────────┐
+│ http://127.0.0.1:8888/admin/account-statements/account-overviews?tenant=1
+└────────────────────────────────────────────────────────────────────────┘
+
+Test Property Filter:
+┌────────────────────────────────────────────────────────────────────────┐
+│ http://127.0.0.1:8888/admin/account-statements/account-overviews?property=1
+└────────────────────────────────────────────────────────────────────────┘
+
+
+WHAT TO LOOK FOR
+═══════════════════════════════════════════════════════════════════════════
+
+✓ WORKING CORRECTLY:
+  • URL contains ?tenant=X or ?property=X
+  • Filter indicator shows active filter
+  • Table shows filtered results
+  • You can see the filter in the filters panel
+  • You can clear the filter
+
+✗ NOT WORKING:
+  • URL doesn't have query parameters
+  • All records are shown (not filtered)
+  • No filter indicator visible
+  • Error messages appear
+
+
+COMMON ISSUES & SOLUTIONS
+═══════════════════════════════════════════════════════════════════════════
+
+Issue 1: "No results found"
+┌────────────────────────────────────────────────────────────────────────┐
+│ This might be CORRECT if:                                              │
+│ • The tenant has no tenancy agreements                                 │
+│ • The property has no tenancy agreements                               │
+│                                                                        │
+│ Solution:                                                              │
+│ • Check if the tenant/property has agreements in the database          │
+│ • Try searching for a different tenant/property                        │
+└────────────────────────────────────────────────────────────────────────┘
+
+Issue 2: Filter not applying
+┌────────────────────────────────────────────────────────────────────────┐
+│ Solution:                                                              │
+│ • Clear browser cache (Ctrl+Shift+Delete)                              │
+│ • Hard refresh the page (Ctrl+F5)                                      │
+│ • Check browser console for errors (F12)                               │
+│ • Verify the URL has the query parameter                               │
+└────────────────────────────────────────────────────────────────────────┘
+
+Issue 3: Global search not showing results
+┌────────────────────────────────────────────────────────────────────────┐
+│ Solution:                                                              │
+│ • Make sure you have tenants/properties in the database                │
+│ • Run: php artisan db:seed (if needed)                                 │
+│ • Check if search is enabled in the resources                          │
+└────────────────────────────────────────────────────────────────────────┘
+
+
+VERIFY DATA EXISTS
+═══════════════════════════════════════════════════════════════════════════
+
+Run this command to check your data:
+┌────────────────────────────────────────────────────────────────────────┐
+│ php artisan tinker                                                     │
+│                                                                        │
+│ Then run:                                                              │
+│ >>> App\Models\Tenant::count()                                         │
+│ >>> App\Models\Property::count()                                       │
+│ >>> App\Models\TenancyAgreement::count()                               │
+│                                                                        │
+│ You should see numbers greater than 0                                  │
+└────────────────────────────────────────────────────────────────────────┘
+
+
+EXPECTED BEHAVIOR EXAMPLE
+═══════════════════════════════════════════════════════════════════════════
+
+BEFORE (without auto-filter):
+┌────────────────────────────────────────────────────────────────────────┐
+│ Account Statements                                                     │
+│ ────────────────────────────────────────────────────────────────────── │
+│ Tenant          Property        Total Charges    Balance               │
+│ ────────────────────────────────────────────────────────────────────── │
+│ Tenant One      Suria KLCC      RM 5,000.00     RM 0.00               │
+│ Tenant Two      KLCC Tower      RM 3,500.00     RM 500.00             │
+│ Tenant Three    Pavilion        RM 4,200.00     RM 200.00             │
+│ ────────────────────────────────────────────────────────────────────── │
+│ Showing 3 of 3 results                                                 │
+└────────────────────────────────────────────────────────────────────────┘
+
+AFTER (with auto-filter for "Tenant One"):
+┌────────────────────────────────────────────────────────────────────────┐
+│ Account Statements                        🔽 Filters (1 active)        │
+│ ────────────────────────────────────────────────────────────────────── │
+│ Active Filters:                                                        │
+│ • Tenant: Tenant One [X]                                               │
+│ ────────────────────────────────────────────────────────────────────── │
+│ Tenant          Property        Total Charges    Balance               │
+│ ────────────────────────────────────────────────────────────────────── │
+│ Tenant One      Suria KLCC      RM 5,000.00     RM 0.00               │
+│ ────────────────────────────────────────────────────────────────────── │
+│ Showing 1 of 1 results (filtered)                                      │
+└────────────────────────────────────────────────────────────────────────┘
+
+
+SUCCESS INDICATORS
+═══════════════════════════════════════════════════════════════════════════
+
+✓ URL shows: ?tenant=X or ?property=X
+✓ Filter panel shows active filter
+✓ Table shows only filtered records
+✓ Record count is reduced
+✓ You can clear the filter
+✓ Clearing filter shows all records again
+
+
+NEED HELP?
+═══════════════════════════════════════════════════════════════════════════
+
+1. Run the test script:
+   php test_global_search_filter.php
+
+2. Check the logs:
+   tail -f storage/logs/laravel.log
+
+3. Check browser console (F12) for JavaScript errors
+
+4. Verify your server is running:
+   - PHP server: http://127.0.0.1:8888
+   - NPM dev: npm run dev should be running
+
+═══════════════════════════════════════════════════════════════════════════

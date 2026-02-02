@@ -1,0 +1,59 @@
+<?php
+
+namespace App\Filament\Resources\SystemSettings\Tables;
+
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
+
+class SystemSettingsTable
+{
+    public static function configure(Table $table): Table
+    {
+        return $table
+            ->columns([
+                TextColumn::make('key')
+                    ->searchable(),
+                TextColumn::make('label')
+                    ->searchable(),
+                TextColumn::make('value')
+                    ->searchable()
+                    ->formatStateUsing(function ($state, $record) {
+                        if ($record->type === 'boolean') {
+                            return $state === '1' ? 'Enabled' : 'Disabled';
+                        }
+                        if ($record->type === 'password') {
+                            return '********';
+                        }
+                        return $state;
+                    })
+                    ->color(function ($state, $record) {
+                        if ($record->type === 'boolean') {
+                            return $state === '1' ? 'success' : 'danger';
+                        }
+                        return null;
+                    }),
+                TextColumn::make('type')
+                    ->searchable(),
+                TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->filters([
+                //
+            ])
+            ->recordActions([
+                EditAction::make(),
+            ])
+            ->toolbarActions([
+                // Prevent bulk deletion of system settings
+            ]);
+    }
+}

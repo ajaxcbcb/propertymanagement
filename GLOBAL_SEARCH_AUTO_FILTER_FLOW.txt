@@ -1,0 +1,184 @@
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         GLOBAL SEARCH AUTO-FILTER FLOW                      │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+SCENARIO 1: Searching for a Tenant
+═══════════════════════════════════
+
+Step 1: User Types in Global Search
+┌──────────────────────────────────┐
+│  🔍 Search: "John Doe"          │
+└──────────────────────────────────┘
+           │
+           ▼
+Step 2: Search Results Appear
+┌──────────────────────────────────┐
+│  👤 John Doe                    │
+│     Email: john@example.com      │
+│     Phone: +60123456789          │
+│     Properties: 2 properties     │
+└──────────────────────────────────┘
+           │
+           │ (User clicks)
+           ▼
+Step 3: Redirect with Filter
+┌──────────────────────────────────┐
+│  URL Generated:                  │
+│  /account-overviews?             │
+│  tableFilters[tenant_id]         │
+│  [value]=123                     │
+└──────────────────────────────────┘
+           │
+           ▼
+Step 4: Account Statements Page
+┌──────────────────────────────────────────────────────────────┐
+│  Account Statements                    🔽 Filters (1 active) │
+│  ────────────────────────────────────────────────────────────│
+│  ✓ Tenant: John Doe                                         │
+│  ─ Property: All                                             │
+│  ─ Agreement Status: All                                     │
+│  ────────────────────────────────────────────────────────────│
+│  Tenant       │ Property      │ Total Charges │ Balance     │
+│  ────────────────────────────────────────────────────────────│
+│  John Doe     │ Lot 123       │ RM 5,000.00   │ RM 0.00    │
+│  John Doe     │ Lot 456       │ RM 3,500.00   │ RM 500.00  │
+│  ────────────────────────────────────────────────────────────│
+│  Showing 2 of 2 results (filtered)                           │
+└──────────────────────────────────────────────────────────────┘
+
+
+SCENARIO 2: Searching for a Property
+═════════════════════════════════════
+
+Step 1: User Types in Global Search
+┌──────────────────────────────────┐
+│  🔍 Search: "Jalan Ampang"      │
+└──────────────────────────────────┘
+           │
+           ▼
+Step 2: Search Results Appear
+┌──────────────────────────────────┐
+│  🏠 Lot 123 (Jalan Ampang)      │
+│     Address: 123 Jalan Ampang    │
+│     Type: Residential            │
+│     Status: Occupied             │
+│     Current Tenant: John Doe     │
+└──────────────────────────────────┘
+           │
+           │ (User clicks)
+           ▼
+Step 3: Redirect with Filter
+┌──────────────────────────────────┐
+│  URL Generated:                  │
+│  /account-overviews?             │
+│  tableFilters[property_id]       │
+│  [value]=456                     │
+└──────────────────────────────────┘
+           │
+           ▼
+Step 4: Account Statements Page
+┌──────────────────────────────────────────────────────────────┐
+│  Account Statements                    🔽 Filters (1 active) │
+│  ────────────────────────────────────────────────────────────│
+│  ─ Tenant: All                                               │
+│  ✓ Property: Lot 123 (Jalan Ampang)                         │
+│  ─ Agreement Status: All                                     │
+│  ────────────────────────────────────────────────────────────│
+│  Tenant       │ Property      │ Total Charges │ Balance     │
+│  ────────────────────────────────────────────────────────────│
+│  John Doe     │ Lot 123       │ RM 5,000.00   │ RM 0.00    │
+│  ────────────────────────────────────────────────────────────│
+│  Showing 1 of 1 results (filtered)                           │
+└──────────────────────────────────────────────────────────────┘
+
+
+KEY FEATURES
+════════════
+
+✅ Automatic Filtering
+   - No manual filter selection needed
+   - Filter is applied immediately on page load
+
+✅ Visual Feedback
+   - Filter indicator shows "1 active filter"
+   - Selected filter is highlighted
+   - User can see what's being filtered
+
+✅ Flexible Control
+   - Users can clear the filter anytime
+   - Users can add additional filters
+   - Users can modify the filter value
+
+✅ Consistent Behavior
+   - Works for both Tenant and Property searches
+   - Same pattern across all search results
+   - Predictable user experience
+
+
+COMPARISON: BEFORE vs AFTER
+════════════════════════════
+
+BEFORE (tableSearch):
+┌────────────────────────────────────────┐
+│  Search box: "John Doe"                │
+│  ──────────────────────────────────────│
+│  Shows ALL records containing          │
+│  "John Doe" in ANY searchable field    │
+│  (tenant name, property name, etc.)    │
+│                                        │
+│  Result: Too many records, unclear     │
+└────────────────────────────────────────┘
+
+AFTER (tableFilters):
+┌────────────────────────────────────────┐
+│  Filter: Tenant = "John Doe"           │
+│  ──────────────────────────────────────│
+│  Shows ONLY records where              │
+│  tenant_id matches John Doe's ID       │
+│                                        │
+│  Result: Precise, relevant records     │
+└────────────────────────────────────────┘
+
+
+TECHNICAL IMPLEMENTATION
+════════════════════════
+
+Code Changes:
+
+1. TenantResource.php
+   ┌─────────────────────────────────────────┐
+   │ getGlobalSearchResultUrl()              │
+   │ ─────────────────────────────────────── │
+   │ return route(..., [                     │
+   │   'tableFilters' => [                   │
+   │     'tenant_id' => [                    │
+   │       'value' => $record->id            │
+   │     ]                                   │
+   │   ]                                     │
+   │ ]);                                     │
+   └─────────────────────────────────────────┘
+
+2. PropertyResource.php
+   ┌─────────────────────────────────────────┐
+   │ getGlobalSearchResultUrl()              │
+   │ ─────────────────────────────────────── │
+   │ return route(..., [                     │
+   │   'tableFilters' => [                   │
+   │     'property_id' => [                  │
+   │       'value' => $record->id            │
+   │     ]                                   │
+   │   ]                                     │
+   │ ]);                                     │
+   └─────────────────────────────────────────┘
+
+3. AccountOverviewResource.php
+   ┌─────────────────────────────────────────┐
+   │ ->filters([                             │
+   │   SelectFilter::make('tenant_id')       │
+   │     ->label('Tenant')                   │
+   │     ->relationship('tenant', 'name'),   │
+   │   SelectFilter::make('property_id')     │
+   │     ->label('Property')                 │
+   │     ->relationship('property', 'name'), │
+   │ ])                                      │
+   └─────────────────────────────────────────┘
