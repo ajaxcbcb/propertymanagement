@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\Tenants\Schemas;
 
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Section;
+use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
@@ -44,7 +44,7 @@ class TenantForm
                         Toggle::make('is_sst_registered')
                             ->label('SST Registered')
                             ->helperText('Warning: Once enabled, this cannot be disabled.')
-                            ->disabled(fn ($record) => $record?->is_sst_registered === true)
+                            ->disabled(fn($record) => $record?->is_sst_registered === true)
                             ->reactive()
                             ->afterStateUpdated(function ($state, callable $set) {
                                 if ($state) {
@@ -55,7 +55,7 @@ class TenantForm
                             ->label('SST Registration Date')
                             ->disabled()
                             ->dehydrated()
-                            ->visible(fn ($get) => $get('is_sst_registered')),
+                            ->visible(fn($get) => $get('is_sst_registered')),
                     ])
                     ->columns(2),
             ]);
