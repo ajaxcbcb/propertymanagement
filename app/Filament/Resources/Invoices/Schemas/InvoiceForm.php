@@ -23,7 +23,7 @@ class InvoiceForm
                     ->live(),
                 Select::make('tenant_id')
                     ->relationship('tenant', 'name')
-                    ->required(fn ($get) => $get('type') === 'received')
+                    ->required(fn($get) => $get('type') === 'received')
                     ->visible(true)
                     ->searchable()
                     ->preload()
@@ -31,7 +31,7 @@ class InvoiceForm
                 Select::make('tenancy_agreement_id')
                     ->label('Tenancy Agreement')
                     ->relationship('tenancyAgreement', 'id')
-                    ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->tenant->name} - {$record->property->name}")
+                    ->getOptionLabelFromRecordUsing(fn($record) => "{$record->tenant->name} - {$record->property->name}")
                     ->options(function (callable $get) {
                         $propertyId = $get('property_id');
                         if (!$propertyId) {
@@ -40,27 +40,27 @@ class InvoiceForm
                             // But for mismatched constraint, we want to limit options if propery is selected.
                             return \App\Models\TenancyAgreement::with(['tenant', 'property'])
                                 ->get()
-                                ->mapWithKeys(fn ($item) => [$item->id => "{$item->tenant->name} - {$item->property->name}"]);
+                                ->mapWithKeys(fn($item) => [$item->id => "{$item->tenant->name} - {$item->property->name}"]);
                         }
-                        
+
                         // Filter by selected property
                         return \App\Models\TenancyAgreement::where('property_id', $propertyId)
                             ->with('tenant')
                             ->get()
-                            ->mapWithKeys(fn ($item) => [$item->id => "{$item->tenant->name} - " . ($item->is_active ? 'Active' : 'Ended')]);
+                            ->mapWithKeys(fn($item) => [$item->id => "{$item->tenant->name} - " . ($item->is_active ? 'Active' : 'Ended')]);
                     })
                     ->searchable() // search is handled by options keys/values usually, or we can keep relationship?
                     // If we use options(), we lose searchable() relationship power if not fully loaded.
                     // But avoiding mismatch is priority.
                     ->preload()
-                    ->required(fn ($get) => $get('type') === 'received')
+                    ->required(fn($get) => $get('type') === 'received')
                     ->visible(true) // Always visible to allow linking expense to tenancy
                     ->live()
                     ->validationMessages([
                         'in' => 'The selected agreement does not belong to the chosen property.',
                     ])
                     ->rules([
-                        function (\Filament\Forms\Get $get) {
+                        function (\Filament\Schemas\Components\Utilities\Get $get) {
                             return function (string $attribute, $value, \Closure $fail) use ($get) {
                                 $propertyId = $get('property_id');
                                 if ($propertyId && $value) {
@@ -73,23 +73,24 @@ class InvoiceForm
                         },
                     ])
                     ->afterStateUpdated(function ($state, callable $set, callable $get) {
-                        if (!$state) return;
-                        
+                        if (!$state)
+                            return;
+
                         $agreement = \App\Models\TenancyAgreement::with('tenant')->find($state);
-                        
+
                         if ($agreement) {
-                             $set('tenant_id', $agreement->tenant_id);
-                             
-                             if (!$get('property_id') && $agreement->property_id) {
-                                 $set('property_id', $agreement->property_id);
-                             }
+                            $set('tenant_id', $agreement->tenant_id);
+
+                            if (!$get('property_id') && $agreement->property_id) {
+                                $set('property_id', $agreement->property_id);
+                            }
                         }
 
                         // Logic for received type
                         if ($get('type') === 'received' && $agreement) {
                             $baseAmount = $agreement->agreed_rent;
                             $set('amount_received', $baseAmount);
-                            
+
                             $sstRate = \App\Models\SystemSetting::get('sst_rate', 8);
                             $sstAmount = 0;
                             if ($agreement->tenant && $agreement->tenant->is_sst_registered) {
@@ -106,45 +107,45 @@ class InvoiceForm
                     ->relationship('property', 'name')
                     ->searchable()
                     ->preload()
-                    ->required(fn ($get) => $get('type') === 'expenditure')
+                    ->required(fn($get) => $get('type') === 'expenditure')
                     ->visible(true) // Always visible to ensure context
                     ->live()
                     ->afterStateUpdated(function ($state, callable $set) {
-                         // Auto-select active agreement for this property
-                         if ($state) {
-                             $activeAgreement = \App\Models\TenancyAgreement::where('property_id', $state)
-                                 ->where('is_active', true)
-                                 ->first();
-                             
-                             if ($activeAgreement) {
-                                 $set('tenancy_agreement_id', $activeAgreement->id);
-                                 // Auto-set Tenant too for easier UX
-                                 $set('tenant_id', $activeAgreement->tenant_id);
-                             } else {
-                                 $set('tenancy_agreement_id', null);
-                                 // Don't clear tenant_id necessarily, or maybe yes?
-                             }
-                         }
+                        // Auto-select active agreement for this property
+                        if ($state) {
+                            $activeAgreement = \App\Models\TenancyAgreement::where('property_id', $state)
+                                ->where('is_active', true)
+                                ->first();
+
+                            if ($activeAgreement) {
+                                $set('tenancy_agreement_id', $activeAgreement->id);
+                                // Auto-set Tenant too for easier UX
+                                $set('tenant_id', $activeAgreement->tenant_id);
+                            } else {
+                                $set('tenancy_agreement_id', null);
+                                // Don't clear tenant_id necessarily, or maybe yes?
+                            }
+                        }
                     }),
                 TextInput::make('invoice_number')
-                    ->label(fn ($get) => $get('type') === 'expenditure' ? 'Reference No. / Receipt No.' : 'Bank-in Receipt / Receipt No.')
+                    ->label(fn($get) => $get('type') === 'expenditure' ? 'Reference No. / Receipt No.' : 'Bank-in Receipt / Receipt No.')
                     ->placeholder('Enter bank slip or receipt reference number')
                     ->required()
                     ->rules([
-                        function (\Filament\Forms\Get $get, $record) {
+                        function (\Filament\Schemas\Components\Utilities\Get $get, $record) {
                             return function (string $attribute, $value, \Closure $fail) use ($get, $record) {
                                 // Only enforce uniqueness for "received" type (Payments)
                                 if ($get('type') !== 'received') {
                                     return;
                                 }
-                                
+
                                 $query = \App\Models\Invoice::where('invoice_number', $value)
                                     ->where('type', 'received');
-                                
+
                                 if ($record) {
                                     $query->where('id', '!=', $record->id);
                                 }
-                                
+
                                 if ($query->exists()) {
                                     $fail('The receipt number has already been taken.');
                                 }
@@ -153,12 +154,12 @@ class InvoiceForm
                     ])
                     ->maxLength(255),
                 DatePicker::make('date_received')
-                    ->label(fn ($get) => $get('type') === 'expenditure' ? 'Date Paid' : 'Date Received')
+                    ->label(fn($get) => $get('type') === 'expenditure' ? 'Date Paid' : 'Date Received')
                     ->required()
                     ->default(now())
                     ->live(),
                 TextInput::make('amount_received')
-                    ->label(fn ($get) => $get('type') === 'expenditure' ? 'Amount Spent' : 'Amount Received')
+                    ->label(fn($get) => $get('type') === 'expenditure' ? 'Amount Spent' : 'Amount Received')
                     ->required()
                     ->numeric()
                     ->prefix('RM')
@@ -171,16 +172,17 @@ class InvoiceForm
                         }
 
                         $agreementId = $get('tenancy_agreement_id');
-                        if (!$agreementId) return;
-                        
+                        if (!$agreementId)
+                            return;
+
                         $agreement = \App\Models\TenancyAgreement::with('tenant')->find($agreementId);
                         $sstRate = \App\Models\SystemSetting::get('sst_rate', 8);
                         $sstAmount = 0;
-                        
+
                         if ($agreement && $agreement->tenant && $agreement->tenant->is_sst_registered) {
                             $sstAmount = floatval($state) * ($sstRate / 100);
                         }
-                        
+
                         $set('amount_sst', $sstAmount);
                         $set('amount_total', floatval($state) + $sstAmount);
                         static::updateStatus($set, $get);
@@ -192,10 +194,10 @@ class InvoiceForm
                     ->prefix('RM')
                     ->default(0)
                     ->readOnly()
-                    ->visible(fn ($get) => $get('type') === 'received')
+                    ->visible(fn($get) => $get('type') === 'received')
                     ->live(),
                 TextInput::make('amount_total')
-                    ->label(fn ($get) => $get('type') === 'expenditure' ? 'Total Spent' : 'Total (Net)')
+                    ->label(fn($get) => $get('type') === 'expenditure' ? 'Total Spent' : 'Total (Net)')
                     ->required()
                     ->numeric()
                     ->prefix('RM')
@@ -204,7 +206,7 @@ class InvoiceForm
                     ->label('Description / Remarks')
                     ->placeholder('e.g. Repair work, Utility bill, etc.')
                     ->columnSpanFull()
-                    ->visible(fn ($get) => $get('type') === 'expenditure'),
+                    ->visible(fn($get) => $get('type') === 'expenditure'),
                 Select::make('status')
                     ->options([
                         'paid' => 'Paid',
@@ -219,7 +221,7 @@ class InvoiceForm
     protected static function updateStatus(callable $set, callable $get)
     {
         $received = floatval($get('amount_received') ?? 0);
-        
+
         if ($received > 0) {
             $set('status', 'paid');
         } else {
